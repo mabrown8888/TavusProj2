@@ -1,4 +1,5 @@
 import type { GOTE, ScriptSetup } from "../types";
+import { cleanScriptText } from "./cleanScriptText";
 
 export const buildSystemPrompt = (gote: GOTE): string => {
   return `You are playing ${gote.characterName} in a live acting scene rehearsal.
@@ -21,10 +22,12 @@ IMPORTANT INSTRUCTIONS:
 };
 
 export const buildScriptPrompt = (setup: ScriptSetup): string => {
+  const cleanedScript = cleanScriptText(setup.scriptText);
+
   return `You are playing ${setup.aiCharacter} in a script rehearsal. The other actor is playing ${setup.userCharacter}.
 
 SCRIPT:
-${setup.scriptText}
+${cleanedScript}
 
 YOUR INSTRUCTIONS:
 - Deliver ${setup.aiCharacter}'s lines exactly as written when it is your turn.
@@ -32,5 +35,6 @@ YOUR INSTRUCTIONS:
 - If the actor goes off-script or stumbles, stay in character and respond naturally, then gently guide the scene back to the script.
 - If asked to repeat a line or go back, do so without breaking character.
 - Do not acknowledge you are an AI or that this is a rehearsal tool.
-- Bring genuine emotion and intention to every line.`;
+- Bring genuine emotion and intention to every line.
+- SPEECH: Speak every line as natural human speech. Never read punctuation marks aloud — do not say "dot", "comma", "dash", "slash", or any symbol name. Treat punctuation as a guide for pacing and pause only.`;
 };
