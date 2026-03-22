@@ -1,0 +1,160 @@
+.container {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 9/16;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  max-height: 90vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0d0d14 100%);
+}
+
+@media (min-width: 768px) {
+  .container { aspect-ratio: 16/9; }
+}
+
+.errorContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 250, 252, 0.08);
+  color: white;
+  height: 100%;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 2rem;
+}
+
+.videoContainer {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+}
+
+.footer {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
+
+.footerControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.leaveButton {
+  background: #ef4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leaveButton:hover { opacity: 0.8; }
+
+.leaveButtonIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainVideoContainer {
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mainVideoContainerScreenSharing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainVideo {
+  position: absolute;
+  inset: 0;
+  object-position: center;
+  object-fit: cover !important;
+  height: 100%;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.mainVideoScreenSharing { object-fit: contain !important; }
+.mainVideoHidden { display: none; }
+
+.previewVideoContainer {
+  position: relative;
+  background: rgba(2, 6, 23, 0.3);
+  aspect-ratio: 16/9;
+  width: 11rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  max-height: 120px;
+  z-index: 10;
+}
+
+@media (min-width: 768px) { .previewVideoContainer { max-height: 100%; } }
+@media (min-width: 1024px) { .previewVideoContainer { width: 17.875rem; } }
+
+.previewVideoContainerVertical { height: 40.5rem; width: 6rem; }
+.previewVideoContainerHidden { background: transparent; display: none; }
+
+.previewVideo {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+}
+
+@media (min-width: 768px) { .previewVideo { max-height: 100%; } }
+
+.previewVideoVertical { height: 40.5rem; width: 6rem; object-fit: cover; }
+.previewVideoHidden { display: none; }
+
+.selfViewContainer {
+  position: absolute;
+  bottom: 5rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) { .selfViewContainer { bottom: 1rem; } }
+
+.waitingContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  height: 100%;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.audioWaveContainer {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+}
