@@ -4,23 +4,24 @@ import { Setup } from "./pages/Setup";
 import { Scene } from "./pages/Scene";
 import { Debrief } from "./pages/Debrief";
 import { createConversation } from "./api/createConversation";
-import type { GOTE } from "./types";
+import type { GOTE, ScriptSetup } from "./types";
 
 type View = "setup" | "scene" | "debrief";
+type AnySetup = GOTE | ScriptSetup;
 
 const App = () => {
   const [view, setView] = useState<View>("setup");
-  const [gote, setGote] = useState<GOTE | null>(null);
+  const [setup, setSetup] = useState<AnySetup | null>(null);
   const [conversationUrl, setConversationUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleStart = async (newGote: GOTE) => {
+  const handleStart = async (newSetup: AnySetup) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await createConversation(newGote);
-      setGote(newGote);
+      const result = await createConversation(newSetup);
+      setSetup(newSetup);
       setConversationUrl(result.conversationUrl);
       setView("scene");
     } catch (err) {
@@ -30,18 +31,13 @@ const App = () => {
     }
   };
 
-  const handleLeave = () => {
-    setView("debrief");
-  };
-
   const handleRunAgain = async () => {
-    if (!gote) return;
-    await handleStart(gote);
+    if (setup) await handleStart(setup);
   };
 
   const handleNewScene = () => {
     setConversationUrl(null);
-    setGote(null);
+    setSetup(null);
     setView("setup");
   };
 
@@ -53,16 +49,14 @@ const App = () => {
         </div>
       )}
 
-      {view === "setup" && (
-        <Setup onStart={handleStart} loading={loading} />
+      {view === "setup" && <Setup onStart={handleStart} loading={loading} />}
+
+      {view === "scene" && conversationUrl && setup && (
+        <Scene conversationUrl={conversationUrl} setup={setup} onLeave={() => setView("debrief")} />
       )}
 
-      {view === "scene" && conversationUrl && gote && (
-        <Scene conversationUrl={conversationUrl} gote={gote} onLeave={handleLeave} />
-      )}
-
-      {view === "debrief" && gote && (
-        <Debrief gote={gote} onRunAgain={handleRunAgain} onNewScene={handleNewScene} />
+      {view === "debrief" && setup && (
+        <Debrief setup={setup} onRunAgain={handleRunAgain} onNewScene={handleNewScene} />
       )}
     </CVIProvider>
   );

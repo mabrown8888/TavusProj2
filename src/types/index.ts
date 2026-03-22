@@ -7,6 +7,15 @@ export interface GOTE {
   endCondition: string;
 }
 
+export interface ScriptSetup {
+  aiCharacter: string;
+  userCharacter: string;
+  scriptText: string;
+  scriptTitle: string;
+}
+
+export type SetupMode = "gote" | "script";
+
 export interface ConversationResult {
   conversationUrl: string;
   conversationId: string;

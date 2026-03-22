@@ -1,36 +1,47 @@
-import type { GOTE } from "../types";
+import type { GOTE, ScriptSetup } from "../types";
 
-const buildAnalysisPrompt = (gote: GOTE, reflection: string): string => `You are a theatrical director and acting coach analyzing a scene rehearsal.
+type AnySetup = GOTE | ScriptSetup;
 
-THE AI CHARACTER PLAYED: ${gote.characterName}
-SCENE CONTEXT: ${gote.scenarioDescription}
+const buildAnalysisPrompt = (setup: AnySetup, reflection: string): string => {
+  const isScript = "aiCharacter" in setup;
 
-THE CHARACTER'S GOTE:
-- Goal: ${gote.goal}
-- Obstacles: ${gote.obstacles}
-- Tactics: ${gote.tactics}
-- End (what victory looked like): ${gote.endCondition}
+  const context = isScript
+    ? `SCRIPT SCENE
+AI played: ${setup.aiCharacter}
+Actor played: ${setup.userCharacter}
+Script title: ${setup.scriptTitle}`
+    : `IMPROV SCENE
+AI played: ${setup.characterName}
+Scene context: ${setup.scenarioDescription}
+Goal: ${setup.goal}
+Obstacles: ${setup.obstacles}
+Tactics: ${setup.tactics}
+End: ${setup.endCondition}`;
+
+  return `You are a theatrical director and acting coach analyzing a scene rehearsal.
+
+${context}
 
 ${reflection ? `ACTOR'S REFLECTION:\n${reflection}\n` : ""}
 Please provide a director's debrief covering:
 
-1. **How the character likely pursued their goal** — which tactics would have driven the scene's momentum
-2. **Tension peaks** — moments where the scene probably reached its highest stakes
-3. **Tactic shifts** — where the character would have changed approach based on resistance
-4. **Goal achievement** — whether the character achieved their goal, and what likely decided it
-5. **Coaching for the actor** — 2-3 specific, actionable notes on how to play against this character more effectively
+1. **Character pursuit** — how the AI character likely drove the scene's momentum
+2. **Tension peaks** — moments where stakes were probably highest
+3. **Tactic shifts** — where the character would have changed approach
+4. **Outcome** — whether the character achieved their goal (improv) or delivered the script authentically
+5. **Coaching notes** — 2-3 specific, actionable notes for the actor
 
 Keep it sharp, theatrical, and under 400 words. Speak as a director giving notes after a run.`;
+};
 
-export const analyzeScene = async (gote: GOTE, reflection: string): Promise<string> => {
+export const analyzeScene = async (setup: AnySetup, reflection: string): Promise<string> => {
   if (import.meta.env.DEV) {
-    // Call Claude directly in dev — key stays in local .env, never deployed
     const { default: Anthropic } = await import("@anthropic-ai/sdk");
     const client = new Anthropic({ apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY, dangerouslyAllowBrowser: true });
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 600,
-      messages: [{ role: "user", content: buildAnalysisPrompt(gote, reflection) }],
+      messages: [{ role: "user", content: buildAnalysisPrompt(setup, reflection) }],
     });
     return message.content[0].type === "text" ? message.content[0].text : "";
   }
@@ -38,7 +49,7 @@ export const analyzeScene = async (gote: GOTE, reflection: string): Promise<stri
   const res = await fetch("/api/analyze-scene", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ gote, reflection }),
+    body: JSON.stringify({ setup, reflection }),
   });
 
   if (!res.ok) throw new Error((await res.text()) || "Failed to analyze scene");
